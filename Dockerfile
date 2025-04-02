@@ -1,5 +1,5 @@
 # Partir d'une base Ubuntu
-FROM ubuntu:latest
+FROM --platform=linux/amd64 ubuntu:latest
 
 # Éviter les interactions pendant l'installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -51,15 +51,18 @@ RUN source $NVM_DIR/nvm.sh && \
 
 
 
-# Installer AVM (Anchor Version Manager)
-RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked && \
-    avm install latest && \
-    avm use latest && \
-    echo 'export PATH="/home/developer/.avm/bin:$PATH"' >> ~/.bashrc
+# Installer Anchor directement depuis GitHub avec Cargo
+# Au lieu d'utiliser AVM qui peut avoir des problèmes avec certaines versions
+##RUN cargo install --git https://github.com/coral-xyz/anchor anchor-cli --locked && \
+RUN cargo install --git https://github.com/coral-xyz/anchor avm --force && \
+    echo 'export PATH="/home/developer/.cargo/bin:$PATH"' >> ~/.bashrc && \
+    avm install 0.30.1 && \
+    avm use 0.30.1
 
-# Installer Solana CLI
+# Installer Solana depuis Anza 
 RUN sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)" && \
-    echo 'export PATH="/home/developer/.local/share/solana/install/active_release/bin:$PATH"' >> ~/.bashrc
+    export PATH="/home/developer/.local/share/solana/install/active_release/bin:$PATH" 
+
 
 # Mettre à jour le PATH pour la session
 ENV PATH="/home/developer/.local/share/solana/install/active_release/bin:/home/developer/.avm/bin:/home/developer/.cargo/bin:${PATH}"
