@@ -138,6 +138,3 @@ Les PR sont les bienvenues pour :
 - Mettre à jour les versions des outils
 - Ajouter de nouvelles dépendances utiles
 - Améliorer la configuration de l'environnement
-
-```
-Ce README fournit une documentation complète tout en permettant aux utilisateurs de commencer rapidement avec la section Quickstart. Vous pouvez l'adapter selon vos besoins spécifiques.
