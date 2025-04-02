@@ -4,7 +4,7 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 
 ## Table des matières
 
-- [🚀 Makefile](#-makefile)
+- [🆘  Makefile](#-makefile)
 - [🚀 Quickstart](#-quickstart)
 - [📦 Contenu du container](#-contenu-du-container)
 - [🛠 Utilisation avancée](#-utilisation-avancée)
@@ -17,27 +17,27 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 
 Ce projet utilise un Makefile pour simplifier les opérations courantes. Voici les commandes essentielles :
 
-### 🏃‍♂️ Utilisation courante
+### Utilisation courante
 
 ```bash
 make start       # Lance le conteneur avec un shell interactif
 ```
 
-### 🛠️ Utilitaires
+### Utilitaires
 
 ```bash
 make fund-wallet # Alimente votre wallet devnet avec 1 SOL (testnet)
 make exec        # Se connecte à un conteneur déjà lancé
 ```
 
-### 🧹 Nettoyage
+### Nettoyage
 
 ```bash
 make stop        # Arrête le conteneur
 make clean       # Nettoie l'image Docker
 ```
 
-### 🆘 Aide
+### Aide
 
 ```bash
 make help        # Affiche toutes les commandes disponibles
