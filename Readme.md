@@ -4,12 +4,31 @@ Ce dépôt contient un Dockerfile configuré pour créer un environnement de dé
 
 ## Table des matières
 
+- [Quickstart](#quickstart)
 - [Fonctionnalités](#fonctionnalités)
 - [Dépendances installées](#dépendances-installées)
 - [Étapes de configuration](#étapes-de-configuration)
 - [Utilisation](#utilisation)
 - [Personnalisation](#personnalisation)
 - [Crédits et licence](#crédits-et-licence)
+
+
+## Quickstart
+
+   Le build dure environ 13 minutes avec une bonne machine il est donc conseillé d'utiliser directement l'image
+
+   Dans le terminal, à la racine du dépôt contenant le Dockerfile, exécutez :
+   ```bash
+   docker build -t solana-dev .
+   ```
+
+Pour démarrer un conteneur et accéder à un terminal bash :
+   ```bash
+   docker run -it --rm -v $(pwd):/app solana-dev
+   ```
+
+
+
 
 ## Fonctionnalités
 
