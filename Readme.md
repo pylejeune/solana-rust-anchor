@@ -4,6 +4,7 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 
 ## Table des matières
 
+- [🚀 Makefile](#-makefile)
 - [🚀 Quickstart](#-quickstart)
 - [📦 Contenu du container](#-contenu-du-container)
 - [🛠 Utilisation avancée](#-utilisation-avancée)
@@ -12,11 +13,47 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 - [🏗 Structure du Dockerfile](#-structure-du-dockerfile)
 - [🤝 Contribution](#-contribution)
 
+## 🚀 Makefile
+
+Ce projet utilise un Makefile pour simplifier les opérations courantes. Voici les commandes essentielles :
+
+### 🏃‍♂️ Utilisation courante
+
+```bash
+make start       # Lance le conteneur avec un shell interactif
+```
+
+### 🛠️ Utilitaires
+
+```bash
+make fund-wallet # Alimente votre wallet devnet avec 1 SOL (testnet)
+make exec        # Se connecte à un conteneur déjà lancé
+```
+
+### 🧹 Nettoyage
+
+```bash
+make stop        # Arrête le conteneur
+make clean       # Nettoie l'image Docker
+```
+
+### 🆘 Aide
+
+```bash
+make help        # Affiche toutes les commandes disponibles
+```
+
+> 💡 **Astuces** :
+> - Indiquez le chemin de votre clé dans le ficher `.env`
+> - La première fois, lancez simplement `make start`
+> - Utilisez `make fund-wallet` pour obtenir des SOL de test
+
 ## 🚀 Quickstart
 
 Pour démarrer rapidement
 
 1. **Lancer le container sans construire l'image** (avec votre clé Solana) :
+
 ```bash
    docker run -it --rm \
      -v $(pwd):/app \

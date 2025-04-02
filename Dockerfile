@@ -63,6 +63,7 @@ RUN source ~/.nvm/nvm.sh && \
 RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked
 RUN avm install 0.30.1 && avm use 0.30.1
 RUN curl -sSfL https://release.anza.xyz/stable/install | sh
+RUN solana config set -u devnet
 
 # Étape finale
 FROM tools AS runtime
