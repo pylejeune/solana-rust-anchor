@@ -13,7 +13,7 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 - [🏗 Structure du Dockerfile](#-structure-du-dockerfile)
 - [🤝 Contribution](#-contribution)
 
-## 🚀 Makefile
+## 🆘 Makefile
 
 Ce projet utilise un Makefile pour simplifier les opérations courantes. Voici les commandes essentielles :
 
