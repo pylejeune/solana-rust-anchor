@@ -26,6 +26,9 @@ Pour démarrer un conteneur et accéder à un terminal bash :
    ```bash
    docker run -it --rm -v $(pwd):/app solana-dev
    ```
+![version](./version.png "version")
+
+
 
 
 

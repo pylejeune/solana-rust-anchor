@@ -1,71 +1,49 @@
-# Partir d'une base Ubuntu
-FROM --platform=linux/amd64 ubuntu:latest
+# Étape 1: Toutes les dépendances système statiques
+FROM --platform=linux/amd64 ubuntu:latest AS base
 
-# Éviter les interactions pendant l'installation
-ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive \
+    PATH="/home/developer/.cargo/bin:/home/developer/.local/share/solana/install/active_release/bin:/home/developer/.avm/bin:${PATH}"
 
-# Installer les dépendances de base en une seule couche
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    wget \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    libudev-dev \
-    python3 \
-    python3-pip \
-    sudo \
-    cmake \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Créer un utilisateur non-root
-RUN useradd -m -s /bin/bash developer && \
+    git curl wget build-essential pkg-config libssl-dev libudev-dev \
+    python3 python3-pip sudo cmake && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    useradd -m -s /bin/bash developer && \
     echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer
+
+# Étape 2: Installations qui changent rarement
+FROM base AS dependencies
 
 USER developer
 WORKDIR /home/developer
 
-# Installer Rust via rustup (séparez les commandes pour mieux utiliser le cache)
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/home/developer/.cargo/bin:${PATH}"
+# Rust - séparé en deux étapes pour le cache
+RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain stable --profile minimal
+RUN .cargo/bin/rustup component add rustfmt clippy && \
+    .cargo/bin/rustup target add wasm32-unknown-unknown
 
-# Configurer Rust (séparé pour mieux utiliser le cache)
-RUN rustup component add rustfmt clippy
-RUN rustup target add wasm32-unknown-unknown
+# NVM et Node - optimisé pour le cache
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
+    echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
+    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
 
-# Installer Node.js via NVM
-ENV NVM_DIR /home/developer/.nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-RUN echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/.bashrc
+# Étape 3: Outils spécifiques au projet
+FROM dependencies AS tools
 
-# Installer Node.js et yarn (séparé pour mieux utiliser le cache)
 SHELL ["/bin/bash", "--login", "-c"]
-RUN source $NVM_DIR/nvm.sh && nvm install node
-RUN source $NVM_DIR/nvm.sh && nvm use node
-RUN source $NVM_DIR/nvm.sh && npm install -g yarn
-RUN source $NVM_DIR/nvm.sh && nvm alias default node
+RUN source ~/.nvm/nvm.sh && \
+    nvm install --lts && \
+    nvm alias default lts/* && \
+    npm install -g yarn
 
-# Installer Anchor (séparé en plusieurs étapes pour le cache)
-RUN cargo install --git https://github.com/coral-xyz/anchor avm --force
-RUN echo 'export PATH="/home/developer/.cargo/bin:$PATH"' >> ~/.bashrc
-RUN avm install 0.30.1
-RUN avm use 0.30.1
+# Anchor et Solana - séparés pour le cache
+RUN cargo install --git https://github.com/coral-xyz/anchor avm --locked
+RUN avm install 0.30.1 && avm use 0.30.1
+RUN curl -sSfL https://release.anza.xyz/stable/install | sh
 
-# Installer Solana depuis Anza
-RUN sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
-ENV PATH="/home/developer/.local/share/solana/install/active_release/bin:/home/developer/.avm/bin:/home/developer/.cargo/bin:${PATH}"
+# Étape finale
+FROM tools AS runtime
 
-# Vérifications (séparées pour le cache)
-RUN solana --version
-RUN anchor --version
-RUN rustc --version
-RUN yarn --version
-
-# Configurer le répertoire de travail
 WORKDIR /app
-
-# Point d'entrée
 CMD ["/bin/bash", "--login"]
