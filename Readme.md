@@ -4,7 +4,6 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 
 ## Table des matières
 
-- [🆘  Makefile](#-makefile)
 - [🚀 Quickstart](#-quickstart)
 - [📦 Contenu du container](#-contenu-du-container)
 - [🛠 Utilisation avancée](#-utilisation-avancée)
@@ -13,9 +12,13 @@ Ce container Docker fournit un environnement complet pour le développement bloc
 - [🏗 Structure du Dockerfile](#-structure-du-dockerfile)
 - [🤝 Contribution](#-contribution)
 
-## 🆘 Makefile
+## 🚀 Quickstart
 
-Ce projet utilise un Makefile pour simplifier les opérations courantes. Voici les commandes essentielles :
+  **À l'intérieur du container** :
+   - Tous les outils sont disponibles (solana, anchor, rust, etc.)
+   - Votre code local est monté dans `/app`
+   - Votre clé Solana est disponible à son emplacement par défaut
+
 
 ### Utilisation courante
 
@@ -26,7 +29,7 @@ make start       # Lance le conteneur avec un shell interactif
 ### Utilitaires
 
 ```bash
-make fund-wallet # Alimente votre wallet devnet avec 1 SOL (testnet)
+make fund-wallet # Alimente votre wallet devnet avec 5 SOL (devnet)
 make exec        # Se connecte à un conteneur déjà lancé
 ```
 
@@ -47,41 +50,6 @@ make help        # Affiche toutes les commandes disponibles
 > - Indiquez le chemin de votre clé dans le ficher `.env`
 > - La première fois, lancez simplement `make start`
 > - Utilisez `make fund-wallet` pour obtenir des SOL de test
-
-## 🚀 Quickstart
-
-Pour démarrer rapidement
-
-1. **Lancer le container sans construire l'image** (avec votre clé Solana) :
-
-```bash
-   docker run -it --rm \
-     -v $(pwd):/app \
-     -v ~/.config/solana/id.json:/home/developer/.config/solana/id.json \
-     pylejeune/solana-dev
-   ```
-
-OU
-
-1. **Construire l'image** : ~ 13 min
-
-    ```bash
-    docker build -t solana-dev .
-    ```
-
-2. **Lancer le container** (avec votre clé Solana) :
-
-   ```bash
-   docker run -it --rm \
-     -v $(pwd):/app \
-     -v ~/.config/solana/id.json:/home/developer/.config/solana/id.json \
-     solana-dev
-   ```
-
-3. **À l'intérieur du container** :
-   - Tous les outils sont disponibles (solana, anchor, rust, etc.)
-   - Votre code local est monté dans `/app`
-   - Votre clé Solana est disponible à son emplacement par défaut
 
 ## 📦 Contenu du container
 
@@ -114,6 +82,32 @@ Le container utilise l'utilisateur `developer` (UID 1000) avec :
 - Accès sudo sans mot de passe
 - Home directory à `/home/developer`
 - Shell bash configuré avec NVM
+
+1. **Lancer le container sans construire l'image** (avec votre clé Solana) :
+
+    ```bash
+   docker run -it --rm \
+     -v $(pwd):/app \
+     -v ~/.config/solana/id.json:/home/developer/.config/solana/id.json \
+     pylejeune/solana-dev
+   ```
+
+OU
+
+1. **Construire l'image** : ~ 13 min
+
+    ```bash
+    docker build -t solana-dev .
+    ```
+
+2. **Lancer le container** (avec votre clé Solana) :
+
+   ```bash
+   docker run -it --rm \
+     -v $(pwd):/app \
+     -v ~/.config/solana/id.json:/home/developer/.config/solana/id.json \
+     solana-dev
+   ```
 
 ## 📌 Commandes Utiles
 
