@@ -26,13 +26,17 @@ LABEL com.example.node-version="lts"
 ENV DEBIAN_FRONTEND=noninteractive \
     PATH="/home/developer/.cargo/bin:/home/developer/.local/share/solana/install/active_release/bin:/home/developer/.avm/bin:${PATH}"
 
-RUN apt-get update && apt-get install -y \
-    git curl wget build-essential pkg-config libssl-dev libudev-dev \
-    python3 python3-pip sudo cmake && \
+    RUN apt-get update && apt-get install -y \
+    git curl wget build-essential pkg-config libssl-dev libudev-dev coreutils\
+    python3 python3-pip sudo cmake openssh-server && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     useradd -m -s /bin/bash developer && \
-    echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer
+    echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer && \
+    mkdir /var/run/sshd && \
+    echo 'developer:password' | chpasswd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Étape 2: Installations qui changent rarement
 FROM base AS dependencies
@@ -49,6 +53,7 @@ RUN .cargo/bin/rustup component add rustfmt clippy && \
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> ~/.bashrc
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Étape 3: Outils spécifiques au projet
 FROM dependencies AS tools
@@ -67,6 +72,9 @@ RUN solana config set -u devnet
 
 # Étape finale
 FROM tools AS runtime
+
+# Exposition du port SSH
+EXPOSE 22
 
 WORKDIR /app
 CMD ["/bin/bash", "--login"]
